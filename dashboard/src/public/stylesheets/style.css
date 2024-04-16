@@ -1,0 +1,27 @@
+.splash {
+	width: 100vw;
+	min-height: 100vh;
+
+	background-color: #100000 !important;
+	background-image: #100000;
+	color: #fff;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+nav{
+	background-color: #100000 !important;
+}
+
+body{
+	background-color: #100000 !important;
+	color: white !important;
+}
+
+.img{
+	height: 50px;
+	width: 50px;
+}
