@@ -1,9 +1,7 @@
-  body {
+body {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: #242d60;
+  background: #100000;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
     'Helvetica Neue', 'Ubuntu', sans-serif;
   height: 100vh;
@@ -19,7 +17,11 @@ section {
   height: 112px;
   border-radius: 6px;
   justify-content: space-between;
-  margin: 10px;
+  
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 .product {
   display: flex;
