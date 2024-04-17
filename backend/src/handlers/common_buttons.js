@@ -114,4 +114,16 @@ module.exports = {
       );
     return(buttons)
   }, 
+
+  async ticketingbuttons(disabled) {
+    const buttons = new MessageActionRow()
+      .addComponents(
+        new MessageButton()
+          .setCustomId("createticket")
+          .setLabel("Ticket")
+          .setDisabled(disabled)
+          .setStyle("PRIMARY"),
+      );
+    return(buttons)
+  }, 
 }
