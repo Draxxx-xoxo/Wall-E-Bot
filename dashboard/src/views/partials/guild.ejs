@@ -1,28 +1,26 @@
-<div class="box">
-  <article class="media">
+<div class="container-fluid border border-white rounded p-3" style="width: 1300px;">
     <div class="media-left">
-      <figure class="image is-64x64">
-        <img src="<%= guild.icon %>" alt="Image">
-      </figure>
+      <img  class="img" src="<%= guild.icon %>" alt="Image">
     </div>
-    <div class="media-content">
-      <div class="columns is-gapless">
-        <div class="content column">
-          <p>
-            <strong><%= guild.guild_name %></strong> <small><%= guild.guild_id %></small>
-          </p>
-        </div>
-          <a href="/<%= guild.guild_id %>/add_user" class="button">Add User</a>
-          <a href="/<%= guild.guild_id %>/editor" class="button">Configurator</a>
-          <a href="/<%= guild.guild_id %>/infractions" class="button">Infractions</a>
-          <a href="/<%= guild.guild_id %>/permissions" class="button">Bot Permissions</a>
-
-        </div>
+    <div class="row">
+      <div class="col">
+        <p>
+          <strong><%= guild.guild_name %></strong> <small><%= guild.guild_id %></small>
+        </p>
+      </div>
+      <div class="col">
+        <div class="gap-2 d-md-flex justify-content-md-end">
+          <a href="/<%= guild.guild_id %>/add_user" class="btn me-md-2">Add User</a>
+          <a href="/<%= guild.guild_id %>/editor" class="btn">Configurator</a>
+          <a href="/<%= guild.guild_id %>/infractions" class="btn">Infractions</a>
+          <a href="/<%= guild.guild_id %>/permissions" class="btn">Bot Permissions</a>
+      </div>
+      </div>
+    </div>
       </div>
       <script>
         console.log('<%= JSON.stringify(guild) %>')
       </script>
     </div>
-  </article>
 </div>
 

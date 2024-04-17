@@ -1,16 +1,6 @@
 <%- include('partials/header') -%>
 <%- include('partials/nav') -%>
 <html>
-    <form onsubmit="submitdata(); return false";>
-        <label for="userID">UserID</label><br>
-        <input type="text" id="userID" name="userID" required><br>
-        <label for="permissions">User Permissions</label>
-        <select name="permissions" id="permissions"><br>
-            <option value="editor">Editor</option>
-            <option value="viewer">Viewer</option>
-        </select><br>
-        <input type="submit" value="Submit">
-    </form>
     <table>
         <style>
             table {
@@ -141,5 +131,46 @@
             return false;
         }
     </script>
+    <form onsubmit="submitdata(); return false"; class="">
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+              <label for="userID" class="form-label">User ID:   </label>
+            </div>
+            <div class="col-auto">
+                <% if(permissions == 0){ %>
+                    <input class="input is-primary is-rounded form-control" type="text" id="userID" name="userID" required><br>
+                  <% } else{ %>  
+                    <input class="input is-primary is-rounded form-control" type="text" id="disabledInput" name="userID" required disabled><br>
+                 <% } %>
+            </div>
+          </div>
+          <div class="row g-3 align-items-center">
+            <div class="col-auto">
+              <label for="permissions" class="form-label">User Permissions: </label>
+            </div>
+            <div class="col-auto">
+                <% if(permissions == 0){ %>
+                    <select class="form-select" name="permissions" id="permissions"><br>
+                        <option value="editor">Editor</option>
+                        <option value="viewer">Viewer</option>
+                    </select><br>
+                  <% } else{ %>  
+                    <select class="form-select" name="permissions" id="permissions" disabled><br>
+                        <option value="editor">Editor</option>
+                        <option value="viewer">Viewer</option>
+                    </select><br>
+                 <% } %>
+            </div>
+          </div>
+          <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <% if(permissions == 0){ %>
+                    <input type="submit" value="Submit" class="btn btn-secondary">
+                  <% } else{ %>  
+                    <input type="submit" value="Submit" class="btn btn-secondary", disabled>
+                 <% } %>
+            </div>
+          </div>
+    </form>
 </html>
 <%- include('partials/footer') -%>

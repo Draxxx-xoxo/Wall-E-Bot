@@ -2,17 +2,51 @@
 <%- include('partials/nav') -%>
 <html>
     <form onsubmit="submitdata(); return false";>
-        <label for="roleID">RoleID</label><br>
-        <input type="text" id="roleID" name="RoleID" required><br>
-        <label for="permissions">Role Permissions</label>
-        <select name="permissions" id="permissions"><br>
-            <option value="administrator">Administrator</option>
-            <option value="head_moderator">Head Moderator</option>
-            <option value="moderator">Moderator</option>
-            <option value="helper">Helper</option>
-            <option value="trusted">Trusted</option>
-        </select><br>
-        <input type="submit" value="Submit">
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+              <label for="roleID" class="col-form-label">Role ID:   </label>
+            </div>
+            <div class="col-auto">
+                <% if(permissions == 0){ %>
+                    <input class="input is-primary is-rounded" type="text" id="roleID" name="RoleID" required><br>
+                  <% } else{ %>  
+                    <input class="input is-primary is-rounded" type="text" id="roleID" name="RoleID" required disabled><br>
+                 <% } %>
+            </div>
+          </div>
+          <div class="row g-3 align-items-center">
+            <div class="col-auto">
+              <label for="permissions" class="col-form-label">Role Permissions:   </label>
+            </div>
+            <div class="col-auto">
+                <% if(permissions == 0){ %>
+                    <select name="permissions" id="permissions"><br>
+                        <option value="administrator">Administrator</option>
+                        <option value="head_moderator">Head Moderator</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="helper">Helper</option>
+                        <option value="trusted">Trusted</option>
+                    </select><br>
+                  <% } else{ %>  
+                    <select name="permissions" id="permissions" disabled><br>
+                        <option value="administrator">Administrator</option>
+                        <option value="head_moderator">Head Moderator</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="helper">Helper</option>
+                        <option value="trusted">Trusted</option>
+                    </select><br>
+                 <% } %>
+            </div>
+          </div>
+          <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <% if(permissions == 0){ %>
+                    <input type="submit" value="Submit">
+                  <% } else{ %>  
+                    <input type="submit" value="Submit", disabled>
+                 <% } %>
+            </div>
+          </div>
     </form>
     <table>
         <style>

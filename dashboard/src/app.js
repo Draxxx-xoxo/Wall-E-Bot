@@ -53,6 +53,15 @@ app.get('/', isAuthorized, (req, res) => {
     res.render('home');
 });
 
+app.get('/docs', (req, res) => {
+    res.redirect('https://sailboatbot.gitbook.io/wall-e-discord-bot/');
+});
+
+app.all('*', (req, res) => { 
+    res.status(404).render('404'); 
+  }); 
+    
+
 function isAuthorized(req, res, next) {
     if(req.user) {
         console.log("User is logged in.");

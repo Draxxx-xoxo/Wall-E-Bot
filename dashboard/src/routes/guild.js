@@ -37,7 +37,7 @@ async function isAuthorized (req, res, next){
         if(req.user && res_guild.rowCount > 0) {
             console.log("User is logged in & guild is allowed.");
             //console.log(req.user)
-            console.log(res_guild.rowCount)
+            //console.log(res_guild.rowCount)
             next();
         }
         else {
@@ -65,8 +65,23 @@ router.get('/infractions', isAuthorized, async (req, res) => {
     client.connect();
     
     const guildid = req.baseUrl.slice(1)
-    const queryGuild = `SELECT * FROM allowed_guilds JOIN  allowed_users d USING (guild_id) WHERE d.guild_id = ${guildid}`;
+    const queryGuild = `SELECT * FROM allowed_guilds JOIN  allowed_users d USING (guild_id) WHERE d.guild_id = ${guildid} AND d.user_id = ${req.user.discordId};`;
     const res_guild = await client.query(queryGuild);
+    const queryAdmin = `SELECT * FROM global_admins WHERE user_id = ${req.user.discordId};`
+    const res_admin = await client.query(queryAdmin);
+    permission = 0
+
+    if(res_guild.rowCount == 0){
+        if(res_admin.rowCount == 1){
+            permission = 0
+        }
+        else{
+            permission = 1
+        }
+    }
+    else if(res_guild.rowCount == 1){
+        permission = res_guild.rows[0].permission_id
+    }
 
     client.end()
     //console.log(queryGuild);
@@ -77,6 +92,7 @@ router.get('/infractions', isAuthorized, async (req, res) => {
         username: req.user.username,
         discordId: req.user.discordId,
         guilds: req.user.guilds,
+        permissions: res_guild.rows[0].permission_id
     });
 });
 
@@ -92,18 +108,34 @@ router.get('/add_user', isAuthorized, async (req, res) => {
     client.connect();
     
     const guildid = req.baseUrl.slice(1)
-    const queryGuild = `SELECT * FROM allowed_guilds JOIN  allowed_users d USING (guild_id) WHERE d.guild_id = ${guildid}`;
+    const queryGuild = `SELECT * FROM allowed_guilds JOIN  allowed_users d USING (guild_id) WHERE d.guild_id = ${guildid} AND d.user_id = ${req.user.discordId};`;
     const res_guild = await client.query(queryGuild);
+    const queryAdmin = `SELECT * FROM global_admins WHERE user_id = ${req.user.discordId};`
+    const res_admin = await client.query(queryAdmin);
+    permission = 0
 
-    client.end()
     //console.log(queryGuild);
     //console.log(res_guild.rows)
 
+    if(res_guild.rowCount == 0){
+        if(res_admin.rowCount == 1){
+            permission = 0
+        }
+        else{
+            permission = 1
+        }
+    }
+    else if(res_guild.rowCount == 1){
+        permission = res_guild.rows[0].permission_id
+    }
+
+    client.end()
 
     res.render('add_user', {
         username: req.user.username,
         discordId: req.user.discordId,
         guilds: req.user.guilds,
+        permissions: res_guild.rows[0].permission_id
     });
 });
 
@@ -116,9 +148,49 @@ router.get('/editor', isAuthorized, (req, res) => {
     });
 });
 
-router.get('/permissions', isAuthorized, (req, res) => {
+router.get('/permissions', isAuthorized, async(req, res) => {
+
+    const client = new Client({
+        user: process.env.user,
+        host: process.env.host,
+        database: process.env.db,
+        password: process.env.passwd,
+        port: process.env.port,
+    }); 
+    client.connect();
+    
+    const guildid = req.baseUrl.slice(1)
+    const queryGuild = `SELECT * FROM allowed_guilds JOIN  allowed_users d USING (guild_id) WHERE d.guild_id = ${guildid} AND d.user_id = ${req.user.discordId};`;
+    const res_guild = await client.query(queryGuild);
+    const queryAdmin = `SELECT * FROM global_admins WHERE user_id = ${req.user.discordId};`
+    const res_admin = await client.query(queryAdmin);
+    permission = 0
+
+    if(res_guild.rowCount == 0){
+        if(res_admin.rowCount == 1){
+            permission = 0
+        }
+        else{
+            permission = 1
+        }
+    }
+    else if(res_guild.rowCount == 1){
+        permission = res_guild.rows[0].permission_id
+    }
+    client.end()
 
     res.render('bot_permissions.ejs', {
+        username: req.user.username,
+        discordId: req.user.discordId,
+        guilds: req.user.guilds,
+        permissions: permission
+    });
+});
+
+
+router.get('/ticketing', isAuthorized, (req, res) => {
+
+    res.render('ticketing.ejs', {
         username: req.user.username,
         discordId: req.user.discordId,
         guilds: req.user.guilds,
