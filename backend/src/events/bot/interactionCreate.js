@@ -93,6 +93,14 @@ module.exports = async (discordClient, interaction) => {
         console.log(error);
       }
     }
+    if(interaction.customId.toLowerCase() == "createticket"){
+      var create_ticket = require("../../plugins/tickets/ticket_button/create_ticket")
+      try{
+        create_ticket.createticket(interaction, discordClient)
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
 
   if(interaction.isModalSubmit()){
