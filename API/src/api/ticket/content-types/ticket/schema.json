@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tickets",
+  "info": {
+    "singularName": "ticket",
+    "pluralName": "tickets",
+    "displayName": "Ticket",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "ticketID": {
+      "type": "uid",
+      "required": true
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "userID": {
+      "type": "biginteger"
+    },
+    "username": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "biginteger"
+    },
+    "guildID": {
+      "type": "biginteger"
+    },
+    "guildName": {
+      "type": "string"
+    },
+    "messages": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::ticket-message.ticket-message",
+      "mappedBy": "ticket_uid"
+    }
+  }
+}

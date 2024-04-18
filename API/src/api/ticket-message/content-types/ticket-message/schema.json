@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ticket_messages",
+  "info": {
+    "singularName": "ticket-message",
+    "pluralName": "ticket-messages",
+    "displayName": "Ticket Message",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "ticket_uid": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::ticket.ticket",
+      "inversedBy": "messages"
+    },
+    "guildID": {
+      "type": "biginteger"
+    },
+    "guildName": {
+      "type": "string"
+    },
+    "UserID": {
+      "type": "biginteger"
+    },
+    "Username": {
+      "type": "string"
+    },
+    "message_content": {
+      "type": "richtext"
+    }
+  }
+}
