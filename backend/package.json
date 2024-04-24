@@ -31,7 +31,8 @@
 		"pg": "^8.5.1",
 		"pidusage": "^2.0.21",
 		"require-dir": "^1.2.0",
-		"util": "^0.12.3"
+		"util": "^0.12.3",
+		"uuid": "^9.0.1"
 	},
 	"devDependencies": {
 		"eslint": "^8.23.1",

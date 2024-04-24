@@ -6,7 +6,7 @@ const functions = require("./handlers/common_functions")
 const { resolve } = require("path");
 const yaml = require("js-yaml");
 const Log = require("./handlers/logging");
-const discordClient = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS]});
+const discordClient = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_MESSAGES]});
 discordClient.commands = new Discord.Collection();
 require("./slash_commands")
 

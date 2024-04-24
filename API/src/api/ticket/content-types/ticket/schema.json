@@ -39,6 +39,9 @@
       "relation": "oneToMany",
       "target": "api::ticket-message.ticket-message",
       "mappedBy": "ticket_uid"
+    },
+    "channelID": {
+      "type": "biginteger"
     }
   }
 }
