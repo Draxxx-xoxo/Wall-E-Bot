@@ -9,7 +9,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 module.exports = {
   name: "ticket_embed",
   enable: false,
-  permissions: 20,
+  permissions: 100,
   execute: async (message, discordclient) => {
   
     const embed = new MessageEmbed()

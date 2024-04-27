@@ -17,7 +17,7 @@ module.exports = {
 
     const category = message.guild.channels.cache.find(c => c.type === "GUILD_CATEGORY" && c.id == 1230130766730625054);
     if (!category) {
-      return message.reply("Category not found.");
+      return message.reply({content: "Category not found.", ephemeral: true});
     }
     const newChannel = await message.guild.channels.create("ticket-", {
       type: "GUILD_TEXT", // Change to 'GUILD_VOICE' for voice channels
@@ -89,6 +89,6 @@ module.exports = {
         console.error("Error:", error);
       });
 
-    message.reply(`Channel <#${newChannel.id}> created in category ${category.name}`);
+    message.reply({content: `Channel <#${newChannel.id}> created in category ${category.name}`, ephemeral: true});
   },
 }
