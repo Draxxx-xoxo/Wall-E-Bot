@@ -14,6 +14,12 @@
           <a href="/<%= guild.guild_id %>/editor" class="btn">Configurator</a>
           <a href="/<%= guild.guild_id %>/infractions" class="btn">Infractions</a>
           <a href="/<%= guild.guild_id %>/permissions" class="btn">Bot Permissions</a>
+          <% if(guild.premium == true){ %>
+            <a href="/<%= guild.guild_id %>/billing" class="btn">Billing</a>
+          <% } else{ %>  
+            <a href="/<%= guild.guild_id %>/pricing" class="btn">Pricing</a>
+         <% } %>
+    </div>
       </div>
       </div>
     </div>

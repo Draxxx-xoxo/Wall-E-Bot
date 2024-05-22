@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
 }
-div {
+#header {
     text-align: center;
     padding: 20px;
 }
