@@ -49,8 +49,12 @@ app.use('/dashboard', dashboardRoute);
 app.use('/:GuildID', guildRoute);
 app.use('/', checkout);
 
-app.get('/', isAuthorized, (req, res) => {
+app.get('/', (req, res) => {
     res.render('home');
+});
+
+app.get('/premium', (req, res) => {
+    res.render('premium');
 });
 
 app.get('/docs', (req, res) => {
