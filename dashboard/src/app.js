@@ -41,7 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Passport
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.json());
+//app.use(express.json());
 
 // Middleware Routes
 app.use('/auth', authRoute);
@@ -59,22 +59,11 @@ app.get('/premium', (req, res) => {
 
 app.get('/docs', (req, res) => {
     res.redirect('https://sailboatbot.gitbook.io/wall-e-discord-bot/');
-});
+}); 
 
 app.all('*', (req, res) => { 
     res.status(404).render('404'); 
   }); 
-    
 
-function isAuthorized(req, res, next) {
-    if(req.user) {
-        console.log("User is logged in.");
-        res.redirect('/dashboard');
-    }
-    else {
-        console.log("User is not logged in.");
-        next();
-    }
-}
-
+  
 app.listen(PORT, () => console.log(`Now listening to requests on port ${PORT}`));

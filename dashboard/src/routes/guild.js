@@ -204,7 +204,8 @@ router.get("/billing", isAuthorized, async (req, res) => {
 router.get("/pricing", isAuthorized, async (req, res) => {
 
     res.render('pricing_table',{
-      email: req.user.email
+      email: req.user.email,
+      guild_id: req.baseUrl.slice(1)
     });
 })
 

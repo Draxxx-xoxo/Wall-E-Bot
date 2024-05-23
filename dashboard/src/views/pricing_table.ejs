@@ -10,6 +10,6 @@
             <p>Choose a plan that works for you</p>
         </div>
         <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
-        <stripe-pricing-table pricing-table-id="prctbl_1NEwidLnMj624vaRgEcEeD2v" publishable-key="pk_test_PxpqcNp1PJfkQRo7RmTvSYVZ00PlBjJDPm" customer-email="<%= email %>"> </stripe-pricing-table>
+        <stripe-pricing-table pricing-table-id="prctbl_1NEwidLnMj624vaRgEcEeD2v" publishable-key="pk_test_PxpqcNp1PJfkQRo7RmTvSYVZ00PlBjJDPm" customer-email="<%= email %>" client-reference-id="<%= guild_id %>"> </stripe-pricing-table>
     </body>
 <%- include('partials/footer') -%>
