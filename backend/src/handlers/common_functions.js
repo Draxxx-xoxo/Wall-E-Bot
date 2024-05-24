@@ -2,25 +2,12 @@ const yaml = require("js-yaml");
 const fs = require("fs");
 const functions = require("./pg");
 const moment = require("moment");
-async function pg_table(guildid){
-  const pg = await functions.pg(`SELECT * FROM public.configurations WHERE guild_id = ${guildid}`)
-  const doc = pg.rows[0].configuration
-  return doc 
-}
 async function Newpg_table(guildid){
   const pg = await functions.pg(`SELECT * FROM public.configurator_v1s WHERE guild_id = ${guildid}`)
   const doc = pg.rows[0]
   return doc 
 }
 module.exports = {
-  async yamlfile(message) {
-    const doc = pg_table(message.guild.id)
-    return doc
-  },
-  async getPrefix(guildid) {
-    const doc = await pg_table(guildid)
-    return doc.guild_settings.prefix
-  },
   async muteRole(message) {
     const doc = await Newpg_table(message.guild.id);
     return doc.mute_role
