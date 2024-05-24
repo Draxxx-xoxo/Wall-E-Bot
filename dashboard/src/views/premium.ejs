@@ -1,0 +1,200 @@
+<%- include('partials/header') -%>
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #000000;
+    color: #ffffff;
+    margin: 0;
+}
+
+.pricing-container {
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 30px;  
+    padding: 30px;     
+    flex-wrap: wrap;
+}
+
+.pricing-card {
+    background-color: #1a1a1a;
+    border-radius: 15px;
+    height: 50%;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+    width: 320px;
+    transition: transform 0.3s ease;
+}
+
+.pricing-card:hover {
+    transform: translateY(-5px);
+}
+
+.featured {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 20px rgba(227, 146, 254, 0.5);
+}
+
+h3 {
+    color: #e392fe;
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+.subscription-options {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+.subscription-option {
+    background-color: #282828;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin: 0 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.subscription-option.active {
+    background-color: #e392fe;
+    color: #000000;
+}
+
+.price {
+    font-size: 36px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 30px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    margin-bottom: 40px;
+}
+
+li {
+    margin-bottom: 12px;
+}
+
+.check-icon {
+    color: #e392fe;
+    margin-right: 8px;
+}
+
+button {
+    background-color: #e392fe;
+    color: #000000;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #d180f0;
+}
+#header {
+    text-align: center;
+    padding: 20px;
+}
+h1 {
+    color: #333;
+}
+p {
+    color: #666;
+}
+</style>
+</head>
+<nav class="navbar navbar-expand-lg bg-body-black" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Sailboat</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      </div>
+    </div>
+  </nav>
+<body>
+<div id="header">
+    <h1>Preminum Pricing Table</h1>
+    <p>Choose a plan that works for you</p>
+</div>
+<div class="pricing-container">
+    <div class="pricing-card">
+        <h3>Basic</h3>
+        <div class="subscription-options">
+            <div class="subscription-option active" data-period="monthly">Monthly</div>
+            <div class="subscription-option" data-period="yearly">Yearly</div>
+        </div>
+        <div class="price" data-monthly="$10" data-yearly="$100">$10/month</div>
+        <ul>
+            <li><span class="check-icon">✓</span>Feature 1</li>
+            <li><span class="check-icon">✓</span>Feature 2</li>
+            <li><span class="check-icon">✓</span>Feature 3</li>
+        </ul>
+        <button>Get Started</button>
+    </div>
+
+    <div class="pricing-card featured">
+        <h3>Pro</h3>
+        <div class="subscription-options">
+            <div class="subscription-option active" data-period="monthly">Monthly</div>
+            <div class="subscription-option" data-period="yearly">Yearly</div>
+        </div>
+        <div class="price" data-monthly="$25" data-yearly="$250">$25/month</div>
+        <ul>
+            <li><span class="check-icon">✓</span>All Basic features</li>
+            <li><span class="check-icon">✓</span>Feature 4</li>
+            <li><span class="check-icon">✓</span>Feature 5</li>
+        </ul>
+        <button>Get Started</button>
+    </div>
+
+    <div class="pricing-card">
+        <h3>Enterprise</h3>
+        <div class="subscription-options">
+            <div class="subscription-option active" data-period="monthly">Monthly</div>
+            <div class="subscription-option" data-period="yearly">Yearly</div>
+        </div>
+        <div class="price" data-monthly="$50" data-yearly="$500">$50/month</div>
+        <ul>
+            <li><span class="check-icon">✓</span>All Pro features</li>
+            <li><span class="check-icon">✓</span>Feature 6</li>
+            <li><span class="check-icon">✓</span>Feature 7</li>
+        </ul>
+        <button>Get Started</button>
+    </div>
+</div>
+
+<script>
+const pricingCards = document.querySelectorAll('.pricing-card');
+
+pricingCards.forEach(card => {
+    const subscriptionOptions = card.querySelectorAll('.subscription-option');
+    const priceElement = card.querySelector('.price');
+
+    subscriptionOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            subscriptionOptions.forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+
+            const period = option.dataset.period;
+            const price = priceElement.dataset[period];
+            priceElement.textContent = price; 
+        });
+    });
+});
+</script>
+
+</body>
+</html>

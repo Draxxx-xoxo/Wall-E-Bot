@@ -803,6 +803,9 @@ export interface ApiAllowedGuildAllowedGuild extends Schema.CollectionType {
     guildName: Attribute.String;
     guildID: Attribute.BigInteger;
     icon: Attribute.String;
+    premium: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<

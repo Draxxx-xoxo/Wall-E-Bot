@@ -197,4 +197,16 @@ router.get('/ticketing', isAuthorized, (req, res) => {
     });
 });
 
+router.get("/billing", isAuthorized, async (req, res) => {
+  res.render('manage_billing');
+})
+
+router.get("/pricing", isAuthorized, async (req, res) => {
+
+    res.render('pricing_table',{
+      email: req.user.email,
+      guild_id: req.baseUrl.slice(1)
+    });
+})
+
 module.exports = router;
