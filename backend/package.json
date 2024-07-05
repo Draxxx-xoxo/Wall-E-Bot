@@ -16,7 +16,7 @@
 		"@discordjs/collection": "^0.6.0",
 		"@discordjs/rest": "^1.0.1",
 		"ascii-table": "0.0.9",
-		"axios": "^0.27.2",
+		"axios": "^0.28.0",
 		"cli-color": "^2.0.0",
 		"discord-api-types": "^0.32.1",
 		"discord.js": "^13.16.0",
