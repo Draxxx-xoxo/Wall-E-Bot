@@ -20,20 +20,10 @@ module.exports = {
     if (member.id == message.member.id){
       return message.reply("You cannot kick youself :person_facepalming:");
     }
-    
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-    
-    await client.connect()
         
     const moderator_id = message.member.user
     const timestamp = Date.now()
-    const query = await infractionQ(member, moderator_id, reason_, message, timestamp, "kick")
+    await infractionQ(member, moderator_id, reason_, message, timestamp, "kick")
                 
     const embed = new MessageEmbed()
       .setTitle(`You have been kicked in ${message.guild.name}`)
@@ -41,9 +31,7 @@ module.exports = {
                 
                 
     message.guild.members.kick(member)
-                
-    client.query(query);
-                
+                     
     message.reply({content: `${member.id} has been kicked :ok_hand: User has been notified`, fetchReply: true})
 
     setTimeout(async function() {
@@ -59,8 +47,6 @@ module.exports = {
         message.guild.id
       );
     }
-            
-    client.end();
   },
   data: new SlashCommandBuilder()
     .setName("kick")

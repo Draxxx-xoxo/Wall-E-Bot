@@ -1,4 +1,3 @@
-const {Client} = require("pg");
 const {MessageEmbed} = require("discord.js");
 const Log = require("../../handlers/logging");
 const {command_logging, infractionQ, infraction_logging} = require("../../handlers/common_functions");
@@ -28,27 +27,16 @@ module.exports = {
     if (member.id == message.member.id){
       return message.reply("You cannot ban youself :person_facepalming:");
     }
-
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-    
-    await client.connect();
    
     const moderator_id = message.member.user
     const timestamp = Date.now()
-    const query = await infractionQ(member, moderator_id, reason_, message, timestamp, "ban")
+    await infractionQ(member, moderator_id, reason_, message, timestamp, "ban")
 
 
     //member.send('embed').catch(() => console.log("Can't send DM to your user!"));
     message.guild.members.ban(member, {reason: reason_})
     //member.ban({reason: reason_})
-        
-    await client.query(query);
+
 
         
     message.reply({content: `${member.id} has been banned :ok_hand: User has been notified`, fetchReply: true})
@@ -64,8 +52,7 @@ module.exports = {
         message.guild.id
       );
     }
-        
-    await client.end();  
+  
   },
   data: new SlashCommandBuilder()
     .setName("ban")

@@ -1,4 +1,3 @@
-const {Client} = require("pg");
 const {MessageEmbed} = require("discord.js")
 const functions = require("../.././handlers/common_functions")
 const Log = require("../../handlers/logging")
@@ -36,19 +35,9 @@ module.exports = {
       return message.channel.send("You cannot mute youself :person_facepalming:")
     }
         
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });    
-    
-    await client.connect()
-        
     const moderator_id = message.member.user
     const timestamp = Date.now()
-    const query = await infractionQ(member, moderator_id, reason_, message, timestamp, "mute")
+    await infractionQ(member, moderator_id, reason_, message, timestamp, "mute")
         
     var role_id = await functions.muteRole(message);
                 
@@ -66,7 +55,6 @@ module.exports = {
       .setDescription("**Reason**\n" + reason_ )
                 
     member.roles.add(role_id)
-    await client.query(query);
                 
     message.channel.send(`${member.id} has been muted :ok_hand: User has been notified`)
       .then(msg => {
@@ -80,10 +68,7 @@ module.exports = {
         `${moderator_id.username}#${moderator_id.discriminator} muted ${member.user.username}#${member.discriminator} ` + "`" + `${member.id}` + "`" + ` Reason: ${reason_ || "None"}`,
         message.guild.id    
       );
-    }
-
-    await client.end();
-            
+    }       
   } 
 };
     

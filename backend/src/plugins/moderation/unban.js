@@ -30,31 +30,16 @@ module.exports = {
       return message.channel.send("You cannot ban youself :person_facepalming:");
     }
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-    
-    await client.connect();
    
     const moderator_id = message.member.user
     const timestamp = Date.now()
-    //const query = await infractionQ(member, moderator_id, reason_, message, timestamp, "unban")
-
 
     message.guild.members.unban(member).catch(console.error);
-    //member.ban({reason: reason_})
-        
-    // await client.query(query);
-
-    message.reply({content: `${member.id} has been unbanned :ok_hand:`, fetchReply: true})
+    message.reply({content: `${member.id} has been unbanned :ok_hand:`, fetchReply: true});
 
     setTimeout(async function() {
       await message.deleteReply()
-    }, 3000)
+    }, 3000);
 
     if(message.guild.channels.cache.get(await infraction_logging(message.guild.id)) != undefined){
       Log.Infraction(
