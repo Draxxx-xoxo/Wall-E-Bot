@@ -26,7 +26,7 @@ module.exports = {
     const moderator_id = message.user
     const timestamp = Date.now();
 
-    const query = await infractionQ1(member, moderator_id, reason_, message, timestamp, "warn")
+    await infractionQ1(member, moderator_id, reason_, message, timestamp, "warn")
 
     const DmMsg = `You have been warned in ${message.guild.name}\n Reason\n` + "```" + reason_ + "```"
 

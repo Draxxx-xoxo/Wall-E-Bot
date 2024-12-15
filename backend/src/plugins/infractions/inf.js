@@ -10,7 +10,6 @@ module.exports = {
   execute: async (message, discordclient) => {
 
     const inf_id = message.options.getNumber("id");
-
     const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
     const { data, error } = await supabase
