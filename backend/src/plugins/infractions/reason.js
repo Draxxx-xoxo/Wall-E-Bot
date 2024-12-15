@@ -1,6 +1,6 @@
-const {Client} = require("pg");
 const {MessageEmbed} = require("discord.js")
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { createClient } = require("@supabase/supabase-js")
 
 module.exports = {
   name: "infraction_reason",
@@ -9,37 +9,23 @@ module.exports = {
   permissions: 50,
   execute: async (message, discordclient) => {
 
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
     const inf_id = message.options.getNumber("id");
-
     const reason = message.options.getString("reason");
   
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-              
-    // opening connection
-    await client.connect();
-
     const query = `UPDATE public.infractions SET reason = '${reason}' WHERE id = ${inf_id} AND guild_id = ${message.guild.id}`
+
+    const {data, error} = await supabase
+      .from("infractions")
+      .update({reason: reason})
+      .eq("id", inf_id)
+      .eq("guild_id", message.guild.id)
+      .select()
        
-    const res = (await client.query(query).catch(console.error)).rows[0]
-
-
-    const checkquery = `SELECT * FROM public.infractions WHERE id = ${inf_id} AND guild_id = ${message.guild.id} ORDER BY id DESC`
-
-    const checkres = (await client.query(checkquery).catch(console.error)).rows[0]
-
-    if(!checkres){
-      return message.channel.send("Please enter a valid infraction")
-    }
+    if(data.length == 0) return message.reply("This infraction does not exsist on this server")
 
     message.reply(`Reason for #${inf_id} has been updated to` + "```" + reason + "```")
         
-    client.end();
   },
   data: new SlashCommandBuilder()
     .setName("infraction_reason")

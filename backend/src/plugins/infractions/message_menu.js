@@ -1,26 +1,20 @@
-const {Client} = require("pg");
 const {MessageEmbed} = require("discord.js")
+const { createClient } = require("@supabase/supabase-js")
 
 module.exports = {
   execute: async (menu, discordclient) => {
-  
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-              
-    // opening connection
-    await client.connect();
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
     const inf_id = menu.values[0].replace(menu.values[0],menu.values[0].slice(10))
 
-    const query = `SELECT * FROM public.infractions WHERE id = ${inf_id} AND guild_id = ${menu.guild.id} ORDER BY id DESC`
+    const {data, error} = await supabase
+      .from("infractions")
+      .select()
+      .eq("id", inf_id)
+      .eq("guild_id", menu.guild.id)
+      .order("id", {ascending: false})
        
-    const res = (await client.query(query).catch(console.error)).rows[0]
-
+    const res = data[0]
 
     if(menu.values[0]== "infraction"+res.id) {
       const embed = new MessageEmbed()
@@ -32,11 +26,6 @@ module.exports = {
         )
         .setFooter({text: "Infraction was created on " + res.created_at})
       await menu.reply({embeds: [embed]})
-    }
-
-
-
-    client.end();
-        
+    }   
   }
 };  

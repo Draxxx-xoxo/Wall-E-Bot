@@ -1,4 +1,3 @@
-const {Client} = require("pg");
 const {MessageEmbed} = require("discord.js")
 const {destroyinf} = require("../../handlers/common_buttons")
 const { MessageActionRow, MessageButton } = require("discord.js");
