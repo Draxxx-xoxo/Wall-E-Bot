@@ -1,6 +1,7 @@
 const functions = require("../../handlers/common_functions")
 const Log = require("../../handlers/logging")
 const {permission} = require("../../handlers/permissions") 
+const {premium} = require("../../handlers/premium")
 
 module.exports = async (discordClient, interaction) => {
 
@@ -147,6 +148,12 @@ module.exports = async (discordClient, interaction) => {
 
     if(channeltype == "null"){
       return interaction.reply({ content: "I can't execute that command inside DMs!", ephemeral: true });
+    }
+
+    const premium_check = await premium(interaction.guild.id, command.category)
+
+    if(premium_check == false){
+      return interaction.reply({ content: "This command is only available to premium users!", ephemeral: true });
     }
 
     const permission_check = await permission(discordClient, command.permissions, interaction.guild.id, interaction.member)

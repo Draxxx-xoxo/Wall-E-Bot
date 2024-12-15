@@ -3,6 +3,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 module.exports = {
   name: "automod",
   enable: false,
+  category: "automod",
   permissions: 40,
   execute: async (message, discordclient) => {
 
