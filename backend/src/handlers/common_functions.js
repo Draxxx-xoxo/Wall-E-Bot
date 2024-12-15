@@ -2,6 +2,10 @@ const yaml = require("js-yaml");
 const fs = require("fs");
 const functions = require("./pg");
 const moment = require("moment");
+const { createClient } = require("@supabase/supabase-js")
+
+const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
+
 async function Newpg_table(guildid){
   const pg = await functions.pg(`SELECT * FROM public.configurator_v1s WHERE guild_id = ${guildid}`)
   const doc = pg.rows[0]
@@ -61,13 +65,9 @@ module.exports = {
     return doc.report_user_logging_channel
   },
   async infractionQ(member, moderator_id, reason_, message, timestamp, infraction) {
-    const query = `
-        INSERT INTO public.infractions(
-            discord_id, discord_tag, infractions, moderator_id, moderator_tag, reason, guild_id, created_at)
-            VALUES (${member.id}, '${member.username}#${member.discriminator}', '${infraction}', ${moderator_id.id}, '${moderator_id.username}#${moderator_id.discriminator}', '${reason_}', ${message.guild.id}, '${moment().format()}'); 
-        `
-
-    return query
+    const { error } = await supabase
+      .from("infractions")
+      .insert({"discord_id": member.id, "discord_tag": `${member.username}#${member.discriminator}`, "infractions": infraction, "moderator_id": moderator_id.id, "moderator_tag": `${moderator_id.username}#${moderator_id.discriminator}`, "reason": reason_, "guild_id": message.guild.id, "created_at": moment().format()})
   },
   async reportupdate(report_id, button, status){
     const query = `
