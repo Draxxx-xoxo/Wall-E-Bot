@@ -1,8 +1,3 @@
-const { MessageEmbed } = require("discord.js")
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const {Client} = require("pg");
-const buttons = require("../../handlers/common_buttons");
-
 module.exports = {
   name: "configurator",
   category: "botinfo",
