@@ -42,7 +42,7 @@ module.exports = {
 
     const {data, error} = await supabase
       .from("configurator_v1s")
-      .select("guild_id::text, infraction_logging_channel::text, command_logging_channel::text, report_logging_channel::text, guild_events_logging_channel::text, report_user::text, report_user_logging_channel::text, mute_role::text")
+      .select("guild_id::text, infraction_logging_channel::text, command_logging_channel::text, report_logging_channel::text, guild_events_logging_channel::text, report_user, report_user_logging_channel::text, mute_role::text")
       .eq("guild_id", message.guild.id.toString())
 
     const res = await data[0]
@@ -73,7 +73,7 @@ module.exports = {
       muteRole = "No role setup"
     }
     else {
-      muteRole = message.guild.roles.cache.get(res.mute_role).name + " `" + res.rows[0].mute_role + "`" 
+      muteRole = message.guild.roles.cache.get(res.mute_role).name + " `" + res.mute_role + "`" 
     }
 
     const loggingChannel = res

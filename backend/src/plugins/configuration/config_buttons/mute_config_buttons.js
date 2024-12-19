@@ -27,7 +27,7 @@ module.exports = {
       muteRole = "No role setup"
     }
     else {
-      muteRole = message.guild.roles.cache.get(res.mute_role).name + " `" + res.rows[0].mute_role + "`" 
+      muteRole = message.guild.roles.cache.get(res.mute_role).name + " `" + res.mute_role + "`" 
     }
 
     const button = await buttons.setupbutton(false, false, false, "Mutes");

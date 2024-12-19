@@ -1,12 +1,10 @@
-const {Client} = require("pg");
-const {MessageEmbed} = require("discord.js");
 const Log = require("../../handlers/logging");
 const {command_logging, report_pugin, report_logging, report_logging_channel} = require("../../handlers/common_functions");
 const {reportbuttons} = require("../../handlers/common_buttons")
 const deny = require("./report_buttons/moderation")
 const {reportlog, notelog} = require("../../handlers/common_embeds");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-
+const { createClient } = require("@supabase/supabase-js")
 
 module.exports = {
   name: "report",
@@ -34,25 +32,14 @@ module.exports = {
       return
     }
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-        
-    await client.connect();
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
+    const {data, error} = await supabase
+      .from("reports")
+      .insert({reporter_id: message.user.id, reporter_tag: message.user.tag, reported_user_tag: member.user.tag, reported_user_id: member.user.id, reason: reason_ || "No Reason", guild_id: message.guild.id, status: "pending"})
+      .select()
 
-    const query = `
-        INSERT INTO public.reports(
-            reporter_id, reporter_tag, reported_user_tag, reported_user_id, reason, guild_id, status)
-            VALUES (${message.user.id},'${message.user.tag}', '${member.user.tag}', ${member.user.id},'${reason_|| "No Reason"}', ${message.guild.id}, 'pending')
-            RETURNING *
-        `
-
-    const res = (await client.query(query)).rows[0]
+    const res = data[0]
 
     message.reply({content: "User has been reported, please check your DM's for updates", fetchReply: true})
 
@@ -81,14 +68,12 @@ module.exports = {
       embeds: [reportembed, noteembed]
     });  
 
-    const message_query = `
-      UPDATE public.reports 
-      SET message_id = '${(await messagereply).id}'
-      WHERE id = ${res.id}
-    `
-    await client.query(message_query)
-    
-    await client.end();  
+
+    await supabase
+      .from("reports")
+      .update({message_id: (await messagereply).id})
+      .eq("id", res.id)
+
   },
   data: new SlashCommandBuilder()
     .setName("report")

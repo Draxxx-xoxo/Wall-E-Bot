@@ -7,9 +7,14 @@ const { createClient } = require("@supabase/supabase-js")
 const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
 async function Newpg_table(guildid){
-  const pg = await functions.pg(`SELECT * FROM public.configurator_v1s WHERE guild_id = ${guildid}`)
-  const doc = pg.rows[0]
-  return doc 
+  const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
+
+  const {data, error} = await supabase
+    .from("configurator_v1s")
+    .select("guild_id::text, infraction_logging_channel::text, command_logging_channel::text, report_logging_channel::text, guild_events_logging_channel::text, report_user, report_user_logging_channel::text, mute_role::text")
+    .eq("guild_id", guildid.toString())
+
+  return data[0] 
 }
 module.exports = {
   async muteRole(message) {

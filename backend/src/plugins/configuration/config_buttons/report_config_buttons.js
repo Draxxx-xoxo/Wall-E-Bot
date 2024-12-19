@@ -10,7 +10,7 @@ module.exports = {
 
     const {data, error} = await supabase
       .from("configurator_v1s")
-      .select("report_user_logging_channel::text")
+      .select("report_user_logging_channel::text, report_user")
       .eq("guild_id", message.guild.id.toString())
 
     if(data.length == 0){
@@ -19,7 +19,7 @@ module.exports = {
 
     const res = data[0]
     var reportUser = ""
-
+    console.log(res)
     if(res.report_user == true){
       reportUser = "On"
     }
@@ -33,7 +33,7 @@ module.exports = {
       reportChannel =" No channel setup"
     }
     else {
-      reportChannel = message.guild.channels.cache.get(res.report_user_logging_channel).name + " `" + res.rows[0].report_user_logging_channel + "`" 
+      reportChannel = message.guild.channels.cache.get(res.report_user_logging_channel).name + " `" + res.report_user_logging_channel + "`" 
     }
 
     const button = await buttons.setupbutton(false, false, false, "Report");
@@ -58,7 +58,7 @@ module.exports = {
     })
 
     var button = await buttons.setupbutton1(false)
-    message.reply({content: "Enable or Disable the reporting system.", components: [button], ephemeral: true})   
+    await message.reply({content: "Enable or Disable the reporting system.", components: [button], ephemeral: true})   
   }, 
   setup2: async (message, discordClient) => {
     var button = message.component.customId.toLowerCase()
