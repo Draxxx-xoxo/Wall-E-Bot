@@ -34,19 +34,19 @@ module.exports = {
     const report_buttons = await reportbuttons(true)
 
     if(button.component.customId == "warn"){
-      await moderation.warn(button, report_id, supabase, member, report_buttons, reason_, discordclient);
+      await moderation.warn(button, report_id, member, report_buttons, reason_, discordclient);
     };
     if (button.component.customId == "deny"){
-      await moderation.deny(button, report_id, supabase, member, report_buttons);
+      await moderation.deny(button, report_id, member, report_buttons);
     };
     if (button.component.customId == "kick"){
-      await moderation.kick(button, report_id, supabase, member, report_buttons, reason_, discordclient)
+      await moderation.kick(button, report_id, member, report_buttons, reason_, discordclient)
     };
     if (button.component.customId == "ban"){
-      await moderation.ban(button, report_id, supabase, member, report_buttons, reason_, discordclient)
+      await moderation.ban(button, report_id, member, report_buttons, reason_, discordclient)
     }
     if (button.component.customId == "mute"){
-      await moderation.mute(button, report_id, supabase, member, report_buttons, reason_, discordclient)
+      await moderation.mute(button, report_id, member, report_buttons, reason_, discordclient)
     }
         
   }

@@ -75,13 +75,14 @@ module.exports = {
       .insert({"discord_id": member.id, "discord_tag": `${member.username}#${member.discriminator}`, "infractions": infraction, "moderator_id": moderator_id.id, "moderator_tag": `${moderator_id.username}#${moderator_id.discriminator}`, "reason": reason_, "guild_id": message.guild.id, "created_at": moment().format()})
   },
   async reportupdate(report_id, button, status){
-    const query = `
-        UPDATE public.reports
-        SET status = '${status}'
-        WHERE "id" = ${report_id} AND "guild_id" = ${button.guild.id}
-        RETURNING *
-        `
-    return query
+    const {data, error} = await supabase
+      .from("reports")
+      .update({status: status})
+      .eq("id", report_id)
+      .eq("guild_id", button.guild.id)
+
+    return data[0]
+    
   },
   async addguild(guildName, guildId, guildIcon, guildOwner){
     const query = `

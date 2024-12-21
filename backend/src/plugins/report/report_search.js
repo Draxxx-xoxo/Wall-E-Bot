@@ -1,12 +1,7 @@
 const {Client} = require("pg");
 const {MessageEmbed} = require("discord.js");
-const Log = require("../../handlers/logging");
-const {command_logging, report_pugin, report_logging, report_logging_channel} = require("../../handlers/common_functions");
-const {reportbuttons} = require("../../handlers/common_buttons")
-const deny = require("./report_buttons/moderation")
-const {reportlog} = require("../../handlers/common_embeds");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-
+const { createClient } = require("@supabase/supabase-js")
 
 module.exports = {
   name: "report_search",
@@ -15,42 +10,43 @@ module.exports = {
   execute: async (message, discordclient) => {
 
     var member = await message.guild.members.fetch(message.options.getUser("user").id)
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-              
-    // opening connection
-    await client.connect();
+    var {data, error} = await supabase
+      .from("reports")
+      .select("*")
+      .eq("reported_user_id", member.user.id)
+      .eq("guild_id", message.guild.id)
+      .order("id", {ascending: false})
 
-    const query = `SELECT * FROM public.reports WHERE reported_user_id = ${member.user.id} AND guild_id = ${message.guild.id} ORDER BY id DESC`
-    var res = (await client.query(query).catch(console.error))
+    var {count, error} = await supabase
+      .from("reports")
+      .select("*", { count: "exact", head: true })
+      .eq("reported_user_id", member.user.id)
+      .eq("guild_id", message.guild.id)
+
+
+    const res = data
 
     var report_id_arrary = [];
     var reason_arrary = [];
     var status_arrary = [];
     var message_id_arrary = []
 
-    for (let i = 0; i < res.rowCount; i++) {
-      var report_id = report_id_arrary.push(res.rows[i].id);
-      var reason = reason_arrary.push(res.rows[i].reason);
-      var reason = status_arrary.push(res.rows[i].status);
-      var message_id = message_id_arrary.push(res.rows[i].message_id)
+    for (let i = 0; i < count; i++) {
+      var report_id = report_id_arrary.push(res[i].id);
+      var reason = reason_arrary.push(res[i].reason);
+      var reason = status_arrary.push(res[i].status);
+      var message_id = message_id_arrary.push(res[i].message_id)
 
     }
 
-
-    if(res.rowCount === 0){
+    if(count === 0){
       message.reply("This user does not have any infractions for this server")
       return
     }
 
     var report_arrary = [];
-    const redirect_link = "https://discord.com/channels/734281219839230022/861610169788268544/"
 
     for(let i = 0; i < res.rowCount; i++){
       //var report = report_arrary.push(`[#${report_id_arrary[i]}](${redirect_link}${message_id_arrary[i]}): ${reason_arrary[i] || 'No Reason'}` + ' `Status: ' + status_arrary[i] + '`')
@@ -66,8 +62,6 @@ module.exports = {
         { name: `Joined ${message.guild.name}`, value: new Date (member.joinedTimestamp).toLocaleString(), inline: false},
       )
     message.reply({embeds: [report_search]});
-
-    await client.end();
   },
   data: new SlashCommandBuilder()
     .setName("report_search")
