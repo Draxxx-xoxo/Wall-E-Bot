@@ -5,10 +5,8 @@ const {MessageEmbed} = require("discord.js");
 
 
 module.exports = {
-  deny: async (button, report_id, client, member, buttons) => {
-    const query = await functions.reportupdate(report_id, button, "denied");
-
-    const res = (await client.query(query)).rows[0]
+  deny: async (button, report_id, member, buttons) => {
+    const res = await functions.reportupdate(report_id, button, "denied");
 
     const report_log = await reportlog(res, "🔴")
 
@@ -20,15 +18,12 @@ module.exports = {
     })
   },
 
-  warn: async (button, report_id, client, member, buttons, reason_, discordclient) => {
+  warn: async (button, report_id, member, buttons, reason_, discordclient) => {
     const moderator_id = button.message.author
     const timestamp = Date.now();
     const query = await functions.infractionQ(member, moderator_id, reason_, button, timestamp, "warn")
 
-    await client.query(query);
-
-    const update = await functions.reportupdate(report_id, button, "approved");
-    const updateres = (await client.query(update)).rows[0]
+    const updateres = await functions.reportupdate(report_id, button, "approved");
 
     const report_log = await (await reportlog(updateres, "🟢")).addField("Infraction", "Warn", false)
 
@@ -55,15 +50,12 @@ module.exports = {
     }
   },
 
-  kick: async (button, report_id, client, member, buttons, reason_, discordclient) => {
+  kick: async (button, report_id, member, buttons, reason_, discordclient) => {
     const moderator_id = button.message.author
     const timestamp = Date.now();
     const query = await functions.infractionQ(member, moderator_id, reason_, button, timestamp, "kick")
 
-    await client.query(query);
-
-    const update = await functions.reportupdate(report_id, button, "approved");
-    const updateres = (await client.query(update)).rows[0]
+    const updateres = await functions.reportupdate(report_id, button, "approved");
 
     const report_log = await (await reportlog(updateres, "🟢")).addField("Infraction", "Kick", true)
 
@@ -92,15 +84,12 @@ module.exports = {
     } 
   },
 
-  ban: async (button, report_id, client, member, buttons, reason_, discordclient) => {
+  ban: async (button, report_id, member, buttons, reason_, discordclient) => {
     const moderator_id = button.message.author
     const timestamp = Date.now();
     const query = await functions.infractionQ(member, moderator_id, reason_, button, timestamp, "ban")
 
-    await client.query(query);
-
-    const update = await functions.reportupdate(report_id, button, "approved");
-    const updateres = (await client.query(update)).rows[0]
+    const updateres = await functions.reportupdate(report_id, button, "approved");
 
     const report_log = await (await reportlog(updateres, "🟢")).addField("Infraction", "Ban", true)
 
@@ -129,12 +118,10 @@ module.exports = {
     }
   },
 
-  mute: async (button, report_id, client, member, buttons, reason_, discordclient) => {
+  mute: async (button, report_id, member, buttons, reason_, discordclient) => {
     const moderator_id = button.message.author
     const timestamp = Date.now();
     const query = await functions.infractionQ(member, moderator_id, reason_, button, timestamp, "muted")
-
-    await client.query(query);
 
     var role_id = await functions.muteRole(button);
 
@@ -142,8 +129,7 @@ module.exports = {
       return button.reply({content: "Please add a mute role", ephemeral: true})
     }
 
-    const update = await functions.reportupdate(report_id, button, "approved");
-    const updateres = (await client.query(update)).rows[0]
+    const updateres = await functions.reportupdate(report_id, button, "approved");
 
     const report_log = await (await reportlog(updateres, "🟢")).addField("Infraction", "Mute", true)
 

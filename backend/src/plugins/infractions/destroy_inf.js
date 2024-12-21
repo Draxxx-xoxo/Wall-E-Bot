@@ -1,8 +1,8 @@
-const {Client} = require("pg");
 const {MessageEmbed} = require("discord.js")
 const {destroyinf} = require("../../handlers/common_buttons")
 const { MessageActionRow, MessageButton } = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { createClient } = require("@supabase/supabase-js")
 
 
 module.exports = {
@@ -13,28 +13,22 @@ module.exports = {
   execute: async (message, discordclient) => {
 
     const inf_id = message.options.getNumber("id");
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
   
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-              
-    // opening connection
-    await client.connect();
-
-    const query = `SELECT * FROM public.infractions WHERE id = ${inf_id} AND guild_id = ${message.guild.id} ORDER BY id DESC`
+    const {data, error} = await supabase
+      .from("infractions")
+      .select()
+      .eq("id", inf_id)
+      .eq("guild_id", message.guild.id)
        
-    const res = (await client.query(query).catch(console.error)).rows[0]
 
-    if(res == undefined) return message.reply("This infraction does not exsist on this server")
+    if(data.length == 0) return message.reply("This infraction does not exsist on this server")
 
     //const timestamp = `${res.timestamp}` || ''
 
     //var date = new Date (timestamp).toLocaleString()
 
+    const res = data[0]
 
     const embed = new MessageEmbed()
       .setTitle("Infraction #" + res.id)
@@ -51,36 +45,27 @@ module.exports = {
 
     message.reply({content: "Are you sure you want to delete this infraction? Click on `Yes` if you wish to procced", components:[buttons], embeds:[embed]})
         
-    client.end();
-        
   },
 
   button: async(button, discordclient) => {
-
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
 
     const buttons = await destroyinf(true)
 
     if(button.component.customId == "yes"){
 
-      await client.connect()
-
+      const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
       const inf_id =  button.message.embeds[0].title.slice(12)
       const delete_query = `DELETE FROM public.infractions WHERE id = ${inf_id} AND guild_id = ${button.guild.id}`
-      const res = await client.query(delete_query).catch(console.error)
+      const {data, error} = await supabase
+        .from("infractions")
+        .delete()
+        .eq("id", inf_id)
+        .eq("guild_id", button.guild.id)
 
       button.reply("#" + inf_id + " has been deleted");
       button.message.edit({
         components:[buttons]
       })
-
-      client.end()
     }
     if (button.component.customId == "no"){
 

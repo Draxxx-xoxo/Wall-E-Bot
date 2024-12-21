@@ -1,32 +1,27 @@
 const { MessageEmbed } = require("discord.js")
-const {Client} = require("pg");
 const buttons = require("../../../handlers/common_buttons");
 const { Modal, TextInputComponent, MessageActionRow } = require("discord.js");
+const { createClient } = require("@supabase/supabase-js")
 
 module.exports = {
   logging: async (message, discordClient) => {
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-
-    await client.connect();  
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)  
 
     const query = `SELECT * FROM public.configurator_v1s WHERE guild_id = ${message.guild.id.toString()}`
 
-    const res = await client.query(query).catch(console.error);
+    const {data, error} = await supabase
+      .from("configurator_v1s")
+      .select("guild_id::text, infraction_logging_channel::text, command_logging_channel::text, report_logging_channel::text, guild_events_logging_channel::text, report_user::text, report_user_logging_channel::text, mute_role::text")
+      .eq("guild_id", message.guild.id.toString())
 
-    if(res.rowCount == 0){
+    if(data.length == 0){
       return message.reply("There is an error fetching your configurations. Please contact support if this issue persists.")
     }
 
     const button = await buttons.setupbutton(false, false, false, "Logging");
 
-    const loggingChannel = res.rows[0]
+    const loggingChannel = data[0]
 
     var infractionChannel = ""
     var commandChannel = ""
@@ -74,8 +69,6 @@ module.exports = {
       
     await message.message.edit({ embeds: [logging], components: [button] });
     message.deferUpdate()
-
-    client.end()
   },
   setup1: async (message, discordClient) => {
 
@@ -123,25 +116,17 @@ module.exports = {
     const reportChannelId = message.fields.getTextInputValue("reportChannelId") || "NULL";
     const guildEventChannelId = message.fields.getTextInputValue("guildEventChannelId") || "NULL";
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-
-    await client.connect();  
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
+ 
 
     const query = `UPDATE public.configurator_v1s SET infraction_logging_channel = '${infractionChannelId}', command_logging_channel = '${commandChannelId}', report_logging_channel = '${reportChannelId}', guild_events_logging_channel = '${guildEventChannelId}' WHERE guild_id = ${message.guild.id}`
 
-    await client.query(query);
+    const {data, error} = await supabase
+      .from("configurator_v1s")
+      .update({infraction_logging_channel: infractionChannelId, command_logging_channel: commandChannelId, report_logging_channel: reportChannelId, guild_events_logging_channel: guildEventChannelId})
+      .eq("guild_id", message.guild.id)
 
     message.reply({content: "Logging channel has been updated. Please click on the update button to see the changes", ephemeral: true})
-
-    client.end()
-    
-
   }
 
 }

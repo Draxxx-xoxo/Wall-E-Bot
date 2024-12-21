@@ -1,4 +1,3 @@
-const {Client} = require("pg");
 const {MessageEmbed} = require("discord.js");
 const functions = require("../.././handlers/common_functions");
 const Log = require("../../handlers/logging");
@@ -19,16 +18,7 @@ module.exports = {
     if (member.id == message.member.user.id){
       return message.channel.send("You cannot mute yourself :person_facepalming:")
     };
-        
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });    
-    
-    await client.connect()
+
 
     const role_id = await functions.muteRole(message);
     const moderator_id = message.member.user
@@ -49,7 +39,6 @@ module.exports = {
 
     member_.roles.remove(role_id)
         
-    client.end()
     message.reply({ content: `${member.id} has been unmuted :ok_hand: User has been notified`, fetchReply: true})
 
     setTimeout(async function() {

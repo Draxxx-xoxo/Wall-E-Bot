@@ -1,32 +1,26 @@
 const { MessageEmbed } = require("discord.js")
-const {Client} = require("pg");
+const { createClient } = require("@supabase/supabase-js")
 const buttons = require("../../../handlers/common_buttons");
 const { Modal, TextInputComponent, MessageActionRow } = require("discord.js");
 
 module.exports = {
   report: async (message, discordClient) => {
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
-    await client.connect();  
+    const {data, error} = await supabase
+      .from("configurator_v1s")
+      .select("report_user_logging_channel::text, report_user")
+      .eq("guild_id", message.guild.id.toString())
 
-    const query = `SELECT * FROM public.configurator_v1s WHERE guild_id = ${message.guild.id.toString()}`
-
-    const res = await client.query(query).catch(console.error);
-
-    if(res.rowCount == 0){
+    if(data.length == 0){
       return message.reply("There is an error fetching your configurations. Please contact support if this issue persists.")
     }
 
+    const res = data[0]
     var reportUser = ""
-
-    if(res.rows[0].report_user == true){
+    console.log(res)
+    if(res.report_user == true){
       reportUser = "On"
     }
     else{
@@ -35,11 +29,11 @@ module.exports = {
 
     var reportChannel = ""
 
-    if(message.guild.channels.cache.get(res.rows[0].report_user_logging_channel) == undefined){
+    if(message.guild.channels.cache.get(res.report_user_logging_channel) == undefined){
       reportChannel =" No channel setup"
     }
     else {
-      reportChannel = message.guild.channels.cache.get(res.rows[0].report_user_logging_channel).name + " `" + res.rows[0].report_user_logging_channel + "`" 
+      reportChannel = message.guild.channels.cache.get(res.report_user_logging_channel).name + " `" + res.report_user_logging_channel + "`" 
     }
 
     const button = await buttons.setupbutton(false, false, false, "Report");
@@ -55,8 +49,6 @@ module.exports = {
 
     await message.message.edit({ embeds: [reporting], components: [button] });
     message.deferUpdate()
-
-    client.end()
   },
   setup1: async (message, discordClient) => {
     var button = await buttons.setupbutton(true, false, false, "Report");
@@ -66,7 +58,7 @@ module.exports = {
     })
 
     var button = await buttons.setupbutton1(false)
-    message.reply({content: "Enable or Disable the reporting system.", components: [button], ephemeral: true})   
+    await message.reply({content: "Enable or Disable the reporting system.", components: [button], ephemeral: true})   
   }, 
   setup2: async (message, discordClient) => {
     var button = message.component.customId.toLowerCase()
@@ -79,19 +71,12 @@ module.exports = {
       report_user = false
     }
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
-    await client.connect();  
-
-    const query = `UPDATE public.configurator_v1s SET report_user = '${report_user}' WHERE guild_id = ${message.guild.id}`
-
-    await client.query(query);
+    const {data, error} = await supabase
+      .from("configurator_v1s")
+      .update({report_user: report_user})
+      .eq("guild_id", message.guild.id)
 
     const modal = new Modal()
       .setCustomId("reportChannelID")
@@ -105,29 +90,18 @@ module.exports = {
     const firstactionrow = new MessageActionRow().addComponents(changeLoggingChannel)
     modal.addComponents(firstactionrow)
     await message.showModal(modal);
-
-    client.end()
   },
   setup3: async (message, discordClient) => {
     const channelId = message.fields.getTextInputValue("channelID") || null;
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
-    await client.connect();  
-
-    const query = `UPDATE public.configurator_v1s SET report_user_logging_channel = '${channelId}' WHERE guild_id = ${message.guild.id}`
-
-    await client.query(query);
+    const {data, error} = await supabase 
+      .from("configurator_v1s")
+      .update({report_user_logging_channel: channelId})
+      .eq("guild_id", message.guild.id)
 
     message.reply({content: "Logging channel has been updated. Please click on the update button to see the changes", ephemeral: true})
-
-    client.end()
 
   }
 }

@@ -1,7 +1,9 @@
-const {Client} = require("pg");
 const {MessageEmbed, MessageActionRow, MessageSelectMenu } = require("discord.js")
 const functions = require("../../handlers/common_functions")
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { createClient } = require("@supabase/supabase-js")
+
+
 module.exports = {
   name: "infraction_search",
   aliases:["infraction search","infraction_search", "inf search"],
@@ -10,32 +12,38 @@ module.exports = {
   execute: async (message, discordclient) => {
 
     const member = message.options.getUser("user");
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-    await client.connect();
-    const query = `SELECT * FROM public.infractions WHERE discord_id = ${member.id} AND guild_id = ${message.guild.id} ORDER BY id DESC`
-    const totalquery = `SELECT * FROM public.infractions WHERE discord_id = ${member.id} AND guild_id = ${message.guild.id} ORDER BY id`
-    var res = (await client.query(query).catch(console.error)).rows
-    var rowcount = (await client.query(query).catch(console.error)).rowCount
-    var totalrowcount = (await client.query(totalquery).catch(console.error)).rowCount
+    var {data, error} = await supabase
+      .from("infractions")
+      .select()
+      .eq("discord_id", member.id)
+      .eq("guild_id", message.guild.id)
+      .order("id", {ascending: false})
+
+    var {count, error} = await supabase
+      .from("infractions")
+      .select("*", { count: "exact", head: true })
+      .eq("discord_id", member.id)
+      .eq("guild_id", message.guild.id)
+
+    var rowcount = count
+    var res = data
+
+    console.log(rowcount, res)
+
     var report_id_arrary = [];
     var infractions_arrary = [];
     var reason_arrary = [];
+
     for (let i = 0; i < rowcount; i++) {
       var report_id = report_id_arrary.push(res[i].id)
       var infractions = infractions_arrary.push(res[i].infractions)
       var reason = reason_arrary.push(res[i].reason)
     }
-    if(rowcount === 0){
-      message.reply("This user does not have any infractions for this server")
-      return
-    }
+
+    if(data.length == 0) return message.reply("This user does not have any infractions for this server");
+
     var report_arrary = [];
     for(let i = 0; i < rowcount; i++){
       var report = report_arrary.push(`#${report_id_arrary[i]} (${infractions_arrary[i]}): ${reason_arrary[i] || "No Reason"}`)
@@ -84,11 +92,10 @@ module.exports = {
       .setThumbnail(member.displayAvatarURL())
       .addFields(
         { name: "Infractions", value: report_arrary.join("\n"), inline: false},
-        { name: "Total Infractions", value: totalrowcount.toString(), inline: true },
+        { name: "Total Infractions", value: rowcount.toString(), inline: true },
         { name: `Joined ${message.member.guild.name.toString()}`, value: new Date (member.joinedTimestamp).toLocaleString(), inline: true },
       )
     message.reply({embeds: [inf_search], components: [row]}) 
-    client.end();
   },
   data: new SlashCommandBuilder()
     .setName("infraction_search")

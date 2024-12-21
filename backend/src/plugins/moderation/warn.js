@@ -1,8 +1,8 @@
-const {Client} = require("pg");
 const {MessageEmbed} = require("discord.js")
 const Log = require("../../handlers/logging");
 const {command_logging, infractionQ, infraction_logging} = require("../../handlers/common_functions");
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { createClient } = require("@supabase/supabase-js")
 
 module.exports = {
   name: "warn",
@@ -10,15 +10,6 @@ module.exports = {
   permissions: 40,
   enable: true,
   execute: async (message, discordclient) => {
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });  
-    
-    await client.connect()
 
     const member = message.options.getUser("user");
     //var member = message.mentions.members.first() || await message.guild.members.fetch(args[0])
@@ -35,12 +26,10 @@ module.exports = {
     const moderator_id = message.user
     const timestamp = Date.now();
 
-    const query = await infractionQ(member, moderator_id, reason_, message, timestamp, "warn")
+    await infractionQ1(member, moderator_id, reason_, message, timestamp, "warn")
 
     const DmMsg = `You have been warned in ${message.guild.name}\n Reason\n` + "```" + reason_ + "```"
 
-
-    await client.query(query);
 
     const msg = await message.reply({content: `${member.id} has been warned :ok_hand: User has been notified`, fetchReply: true})
 
@@ -58,7 +47,6 @@ module.exports = {
         message.guild.id
 		    );
     }
-    await client.end();
   },
   data: new SlashCommandBuilder()
     .setName("warn")

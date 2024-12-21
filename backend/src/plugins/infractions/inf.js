@@ -1,6 +1,6 @@
-const {Client} = require("pg");
 const {MessageEmbed} = require("discord.js")
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { createClient } = require("@supabase/supabase-js")
 
 module.exports = {
   name: "infraction",
@@ -10,24 +10,17 @@ module.exports = {
   execute: async (message, discordclient) => {
 
     const inf_id = message.options.getNumber("id");
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
+
+    const { data, error } = await supabase
+      .from("infractions")
+      .select()
+      .eq("id", inf_id)
+
   
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-              
-    // opening connection
-    await client.connect();
+    if(data.length == 0) return message.reply("This infraction does not exsist on this server")
 
-    const query = `SELECT * FROM public.infractions WHERE id = ${inf_id} AND guild_id = ${message.guild.id} ORDER BY id DESC`
-       
-    const res = (await client.query(query).catch(console.error)).rows[0]
-
-    if(res == undefined) return message.reply("This infraction does not exsist on this server")
-
+    const res = data[0]
     const timestamp = `${res.timestamp}`
 
     const embed = new MessageEmbed()
@@ -39,8 +32,7 @@ module.exports = {
       )
       .setFooter({text: "Infraction was created on " + res.created_at})
     await message.reply({embeds: [embed]})
-    
-    client.end();
+  
         
   },
   data: new SlashCommandBuilder()

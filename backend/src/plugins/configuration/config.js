@@ -1,7 +1,7 @@
 const { MessageEmbed } = require("discord.js")
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const {Client} = require("pg");
 const buttons = require("../../handlers/common_buttons");
+const { createClient } = require("@supabase/supabase-js")
 
 module.exports = {
   name: "configurator",
@@ -9,24 +9,10 @@ module.exports = {
   permissions: 100,
   execute: async (message, discordClient) => {
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
-    await client.connect();  
-
-    const query = `
-        INSERT INTO public.configurator_v1s(guild_id)
-        SELECT * FROM (SELECT ${message.guild.id} AS guild_id) AS temp
-        WHERE NOT EXISTS (SELECT * FROM public.configurator_v1s WHERE guild_id = ${message.guild.id}) LIMIT 1;
-    `
-
-    const res = await client.query(query).catch(console.error);
-
+    const { data, error } = await supabase.rpc("insert_configurator_if_not_exists", {guild_id_input: message.guild.id})
+      
     const configuator = new MessageEmbed()
       .setColor("ad94f2")
       .setTitle("Configurator")
@@ -49,30 +35,23 @@ module.exports = {
     else{
       await message.reply({ embeds: [configuator], components: [button] })
     }
-
-    client.end()
   },
   update_button: async (message, discordClient) => {
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
-    await client.connect(); 
+    const {data, error} = await supabase
+      .from("configurator_v1s")
+      .select("guild_id::text, infraction_logging_channel::text, command_logging_channel::text, report_logging_channel::text, guild_events_logging_channel::text, report_user, report_user_logging_channel::text, mute_role::text")
+      .eq("guild_id", message.guild.id.toString())
 
-    const query = `SELECT * FROM public.configurator_v1s WHERE guild_id = ${message.guild.id.toString()}`
-
-    const res = await client.query(query).catch(console.error);
+    const res = await data[0]
 
     var embed = ""
     var config = ""
     var reportUser = ""
 
-    if(res.rows[0].report_user == true){
+    if(res.report_user == true){
       reportUser = "On"
     }
     else{
@@ -81,23 +60,23 @@ module.exports = {
 
     var reportChannel = ""
 
-    if(message.guild.channels.cache.get(res.rows[0].report_user_logging_channel) == undefined){
+    if(message.guild.channels.cache.get(res.report_user_logging_channel) == undefined){
       reportChannel =" No channel setup"
     }
     else {
-      reportChannel = message.guild.channels.cache.get(res.rows[0].report_user_logging_channel).name + " `" + res.rows[0].report_user_logging_channel + "`" 
+      reportChannel = message.guild.channels.cache.get(res.report_user_logging_channel).name + " `" + res.report_user_logging_channel + "`" 
     }
 
     var muteRole = ""
 
-    if(message.guild.roles.cache.get(res.rows[0].mute_role) == undefined){
+    if(message.guild.roles.cache.get(res.mute_role) == undefined){
       muteRole = "No role setup"
     }
     else {
-      muteRole = message.guild.roles.cache.get(res.rows[0].mute_role).name + " `" + res.rows[0].mute_role + "`" 
+      muteRole = message.guild.roles.cache.get(res.mute_role).name + " `" + res.mute_role + "`" 
     }
 
-    const loggingChannel = res.rows[0]
+    const loggingChannel = res
 
     var infractionChannel = ""
     var commandChannel = ""

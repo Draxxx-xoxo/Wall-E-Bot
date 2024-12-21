@@ -1,36 +1,33 @@
 const { MessageEmbed } = require("discord.js")
-const {Client} = require("pg");
+const { createClient } = require("@supabase/supabase-js")
 const buttons = require("../../../handlers/common_buttons");
 const { Modal, TextInputComponent, MessageActionRow } = require("discord.js");
 
 module.exports = {
   mute: async (message, discordClient) => {
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-
-    await client.connect();  
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
     const query = `SELECT * FROM public.configurator_v1s WHERE guild_id = ${message.guild.id.toString()}`
 
-    const res = await client.query(query).catch(console.error);
+    const {data, error} = await supabase
+      .from("configurator_v1s")
+      .select("mute_role::text")
+      .eq("guild_id", message.guild.id.toString())
 
-    if(res.rowCount == 0){
+    if(data.length == 0){
       return message.reply("There is an error fetching your configurations. Please contact support if this issue persists.")
     }
 
+    const res = data[0]
+
     var muteRole = ""
 
-    if(message.guild.roles.cache.get(res.rows[0].mute_role) == undefined){
+    if(message.guild.roles.cache.get(res.mute_role) == undefined){
       muteRole = "No role setup"
     }
     else {
-      muteRole = message.guild.roles.cache.get(res.rows[0].mute_role).name + " `" + res.rows[0].mute_role + "`" 
+      muteRole = message.guild.roles.cache.get(res.mute_role).name + " `" + res.mute_role + "`" 
     }
 
     const button = await buttons.setupbutton(false, false, false, "Mutes");
@@ -45,8 +42,6 @@ module.exports = {
       
     await message.message.edit({ embeds: [reporting], components: [button] });
     message.deferUpdate()
-
-    client.end()
   },
   setup1: async (message, discordClient) => {
 
@@ -67,22 +62,16 @@ module.exports = {
   setup2: async (message, discordClient) => {
     const roleId = message.fields.getTextInputValue("roleID") || null;
 
-    const client = new Client({
-      user: process.env.user,
-      host: process.env.host,
-      database: process.env.db,
-      password: process.env.passwd,
-      port: process.env.port,
-    });
-
-    await client.connect();  
+    const supabase = createClient(process.env.supabasUrl, process.env.supabaseKey)
 
     const query = `UPDATE public.configurator_v1s SET mute_role = '${roleId}' WHERE guild_id = ${message.guild.id}`
 
-    await client.query(query);
+    const {data, error} = await supabase
+      .from("configurator_v1s")
+      .update({mute_role: roleId})
+      .eq("guild_id", message.guild.id)
 
     message.reply({content: "Mute Role has been updated. Please click on the update button to see the changes", ephemeral: true})
 
-    client.end()
   },
 }
